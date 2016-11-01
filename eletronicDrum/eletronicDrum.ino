@@ -65,10 +65,10 @@ void loop() {
   후에 변수 t에 저장 한 후, t & 0x0FFF를 리턴한다. 그러면 0~11 중의 숫자가 리턴된다.*/
   for (uint8_t i = 0; i < 12; i++) {
     if ((currtouched & _BV(i)) && !(lasttouched & _BV(i)) ) {
-      PercussionMessage(i, 127);
+      PercussionMessage(i, 127);/*소리 재생*/
     }
     if (!(currtouched & _BV(i)) && (lasttouched & _BV(i)) ) {
-      PercussionMessage(i, 0);
+      PercussionMessage(i, 0);/*때면 소리 멈춤*/
     }
   }
   lasttouched = currtouched;
