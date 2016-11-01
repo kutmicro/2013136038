@@ -40,7 +40,7 @@ void setup() {
   }
 }
 void PercussionMessage(byte type, byte velocity) {
-  Serial.write(0x90 | 9);//0x90은 Note On command, channel은 b3~b0 에 있습니다. channel 9는 타악기 입니다.
+  Serial.write(0x90 | 9);//미디프로토콜에서 0x90은 Note On command, channel은 b3~b0 에 있습니다. channel 9는 타악기 입니다.
   switch (type) {
     case 0: Serial.write(CRASH_CYMBAL); break;
     case 1: Serial.write(RIDE_CYMBAL); break;
@@ -55,7 +55,7 @@ void PercussionMessage(byte type, byte velocity) {
     case 10: Serial.write(ELECTRIC_SNARE); break;
     case 11: Serial.write(BASS_DRUM); break;
   }
-  Serial.write(velocity);//타악기를 치는 속도, 즉 음의 크기가 됩니다.
+  Serial.write(velocity);//타악기를 치는 속도, 즉 음의 크기가 됩니다.값이 클 수록 큰 소리가 됩니다.
 }
 /*---------------------------------------------------------
     L  O  O  P
