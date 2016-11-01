@@ -33,7 +33,7 @@ uint16_t currtouched = 0;
 void setup() {
   Serial.begin(19200);
 
-  if (!cap.begin(0x5A)) {
+  if (!cap.begin(0x5A)) {/*0x5A를 디폴트 주소값으로 I2C통신을 초기화 하고, 활성화 한다. 그리고 MPR121센서의 위치별 주소를 할당한다. 완료후 true반환*/
     Serial.println("MPR121 not found, check wiring?");
     while (1);
   }
@@ -61,7 +61,8 @@ void PercussionMessage(byte type, byte velocity) {
   ---------------------------------------------------------*/
 void loop() {
   currtouched = cap.touched();
-
+  /*현재 감지된 위치의 주소값을 슬레이브모드에서 받아와서 비트연산자를 통해  uint16_t 형식으로 바꾼다, 
+  후에 변수 t에 저장 한 후, t & 0x0FFF를 리턴한다. 그러면 0~11 중의 숫자가 리턴된다.*/
   for (uint8_t i = 0; i < 12; i++) {
     if ((currtouched & _BV(i)) && !(lasttouched & _BV(i)) ) {
       PercussionMessage(i, 127);
