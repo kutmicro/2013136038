@@ -65,7 +65,7 @@ void loop() {
   /*현재 감지된 위치의 주소값을 슬레이브모드에서 받아와서 비트연산자를 통해  uint16_t 형식으로 바꾼다, 
   후에 변수 t에 저장 한 후, t & 0x0FFF를 리턴한다. 그러면 0~11 중의 숫자가 리턴된다.*/
   for (uint8_t i = 0; i < 12; i++) {
-    if ((currtouched & _BV(i)) && !(lasttouched & _BV(i)) ) {
+    if ((currtouched & _BV(i)) && !(lasttouched & _BV(i)) ) {/*#define _BV(bit) (1 << (bit))*/
        Serial.print(i); Serial.println(" touched");
       PercussionMessage(i, 127);/*소리 재생*/
     }
