@@ -27,6 +27,13 @@ uint16_t currtouched = 0;
 #define ELECTRIC_SNARE  (40)
 #define BASS_DRUM       (35)//
 
+/*
+  VS1053 setup
+*/
+#define VS1053_RX  2
+#define VS1053_RESET 9
+
+SoftwareSerial VS1053_MIDI.write(0, 2);
 /*---------------------------------------------------------
     S  E  T  U  P
   ---------------------------------------------------------*/
@@ -38,25 +45,18 @@ void setup() {
     Serial.println("MPR121 not found, check wiring?");
     while (1);
   }
+   /*
+    VS1053 setup
+  */
+  VS1053_MIDI.write.begin(31250);
+  
+  pinMode(VS1053_RESET, OUTPUT);
+  digitalWrite(VS1053_RESET, LOW);
+  delay(10);
+  digitalWrite(VS1053_RESET, HIGH);
+  delay(10);
 }
-void PercussionMessage(byte type, byte velocity) {
-  Serial.write(0x90 | 9);//미디프로토콜에서 0x90은 Note On command, channel은 b3~b0 에 있습니다. channel 9는 타악기 입니다.
-  switch (type) {
-    case 0: Serial.write(CRASH_CYMBAL); break;
-    case 1: Serial.write(RIDE_CYMBAL); break;
-    case 2: Serial.write(HIGH_HAT); break;
-    case 3: Serial.write(LOW_FLOOR_TOM); break;
-    case 4: Serial.write(HIGH_FLOOR_TOM); break;
-    case 5: Serial.write(LOW_MID_TOM); break;
-    case 6: Serial.write(HIGH_MID_TOM); break;
-    case 7: Serial.write(LOW_TOM); break;
-    case 8: Serial.write(HIGH_TOM); break;
-    case 9: Serial.write(ACOUSTIC_SNARE); break;
-    case 10: Serial.write(ELECTRIC_SNARE); break;
-    case 11: Serial.write(BASS_DRUM); break;
-  }
-  Serial.write(velocity);//타악기를 치는 속도, 즉 음의 크기가 됩니다.값이 클 수록 큰 소리가 됩니다.
-}
+
 /*---------------------------------------------------------
     L  O  O  P
   ---------------------------------------------------------*/
@@ -66,9 +66,11 @@ void loop() {
   후에 변수 t에 저장 한 후, t & 0x0FFF를 리턴한다. 그러면 0~11 중의 숫자가 리턴된다.*/
   for (uint8_t i = 0; i < 12; i++) {
     if ((currtouched & _BV(i)) && !(lasttouched & _BV(i)) ) {
+       Serial.print(i); Serial.println(" touched");
       PercussionMessage(i, 127);/*소리 재생*/
     }
     if (!(currtouched & _BV(i)) && (lasttouched & _BV(i)) ) {
+      Serial.print(i); Serial.println(" released");
       PercussionMessage(i, 0);/*때면 소리 멈춤*/
     }
   }
@@ -76,6 +78,24 @@ void loop() {
   return;
 }
 
+void PercussionMessage(byte type, byte velocity) {
+  VS1053_MIDI.write(0x90 | 9);//미디프로토콜에서 0x90은 Note On command, channel은 b3~b0 에 있습니다. channel 9는 타악기 입니다.
+  switch (type) {
+    case 0: VS1053_MIDI.write(CRASH_CYMBAL); break;
+    case 1: VS1053_MIDI.write(RIDE_CYMBAL); break;
+    case 2: VS1053_MIDI.write(HIGH_HAT); break;
+    case 3: VS1053_MIDI.write(LOW_FLOOR_TOM); break;
+    case 4: VS1053_MIDI.write(HIGH_FLOOR_TOM); break;
+    case 5: VS1053_MIDI.write(LOW_MID_TOM); break;
+    case 6: VS1053_MIDI.write(HIGH_MID_TOM); break;
+    case 7: VS1053_MIDI.write(LOW_TOM); break;
+    case 8: VS1053_MIDI.write(HIGH_TOM); break;
+    case 9: VS1053_MIDI.write(ACOUSTIC_SNARE); break;
+    case 10: VS1053_MIDI.write(ELECTRIC_SNARE); break;
+    case 11: VS1053_MIDI.write(BASS_DRUM); break;
+  }
+  VS1053_MIDI.write(velocity);//타악기를 치는 속도, 즉 음의 크기가 됩니다.값이 클 수록 큰 소리가 됩니다.
+}
 
 
 
