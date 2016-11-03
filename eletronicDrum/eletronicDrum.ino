@@ -6,7 +6,7 @@
 
 #include <Wire.h>
 #include "Adafruit_MPR121.h"
-
+#include<SoftwareSerial.h>
 
 Adafruit_MPR121 cap = Adafruit_MPR121();
 
@@ -27,16 +27,16 @@ uint16_t currtouched = 0;
 #define ELECTRIC_SNARE  (40)
 #define BASS_DRUM       (35)//
 
-/*
-  VS1053 setup
-*/
+/*VS1053 setup*/
 #define VS1053_RX  2
 #define VS1053_RESET 9
 
 SoftwareSerial VS1053_MIDI(0, 2);
 /*---------------------------------------------------------
-    S  E  T  U  P
-  ---------------------------------------------------------*/
+   
+   S  E  T  U  P
+  
+---------------------------------------------------------*/
 void setup() {
   Serial.begin(19200);
 
@@ -45,11 +45,9 @@ void setup() {
     Serial.println("MPR121 not found, check wiring?");
     while (1);
   }
-   /*
-    VS1053 setup
-  */
+   /*VS1053 setup*/
   VS1053_MIDI.begin(31250);
-  
+  /*미디쉴드 리셋*/
   pinMode(VS1053_RESET, OUTPUT);
   digitalWrite(VS1053_RESET, LOW);
   delay(10);
@@ -58,8 +56,10 @@ void setup() {
 }
 
 /*---------------------------------------------------------
+    
     L  O  O  P
-  ---------------------------------------------------------*/
+  
+---------------------------------------------------------*/
 void loop() {
   currtouched = cap.touched();
   /*현재 감지된 위치의 주소값을 슬레이브모드에서 받아와서 비트연산자를 통해  uint16_t 형식으로 바꾼다, 
