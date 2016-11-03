@@ -33,7 +33,7 @@ uint16_t currtouched = 0;
 #define VS1053_RX  2
 #define VS1053_RESET 9
 
-SoftwareSerial VS1053_MIDI.write(0, 2);
+SoftwareSerial VS1053_MIDI(0, 2);
 /*---------------------------------------------------------
     S  E  T  U  P
   ---------------------------------------------------------*/
@@ -48,7 +48,7 @@ void setup() {
    /*
     VS1053 setup
   */
-  VS1053_MIDI.write.begin(31250);
+  VS1053_MIDI.begin(31250);
   
   pinMode(VS1053_RESET, OUTPUT);
   digitalWrite(VS1053_RESET, LOW);
