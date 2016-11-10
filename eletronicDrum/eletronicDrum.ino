@@ -31,7 +31,7 @@ uint16_t currtouched = 0;
 #define VS1053_RX  2
 #define VS1053_RESET 9
 
-SoftwareSerial VS1053_MIDI(0, 2);
+SoftwareSerial VS1053_MIDI(0, 2);// TX only, do not use the 'rx' side
 /*---------------------------------------------------------
    
    S  E  T  U  P
