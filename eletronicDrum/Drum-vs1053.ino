@@ -1,5 +1,3 @@
-#include <Adafruit_MPR121.h>
-
 /*************************************************** 
   This is an example for the Adafruit VS1053 Codec Breakout
 
@@ -15,7 +13,6 @@
  ****************************************************/
 
 #include <SoftwareSerial.h>
-#include "Adafruit_MPR121.h"
 
 // define the pins used
 #define VS1053_RX  2 // This is the pin that connects to the RX pin on VS1053
@@ -44,6 +41,18 @@
 #define MIDI_CHAN_VOLUME 0x07
 #define MIDI_CHAN_PROGRAM 0xC0
 
+#define CRASH_CYMBAL    (49)//
+#define RIDE_CYMBAL     (51)//
+#define HIGH_HAT        (44)//
+#define LOW_FLOOR_TOM   (41)
+#define HIGH_FLOOR_TOM  (43)
+#define LOW_MID_TOM     (47)
+#define HIGH_MID_TOM    (48)
+#define LOW_TOM         (45)
+#define HIGH_TOM        (50)
+#define ACOUSTIC_SNARE  (38)
+#define ELECTRIC_SNARE  (40)
+#define BASS_DRUM       (35)//
 
 SoftwareSerial VS1053_MIDI(0, 2); // TX only, do not use the 'rx' side
 // on a Mega/Leonardo you may have to change the pin to one that 
@@ -61,16 +70,16 @@ void setup() {
   digitalWrite(VS1053_RESET, HIGH);
   delay(10);
   
-  midiSetChannelBank(0, VS1053_BANK_MELODY);
-  midiSetInstrument(0, VS1053_GM1_OCARINA);
-  midiSetChannelVolume(0, 127);
+  midiSetChannelBank(9, VS1053_BANK_MELODY);
+  midiSetInstrument(9, VS1053_BANK_DRUMS1);
+  midiSetChannelVolume(9, 127);
 }
 
 void loop() {  
-  for (uint8_t i=60; i<69; i++) {
-    midiNoteOn(0, i, 127);
+  for (uint8_t i=0; i<12; i++) {
+    midiNoteOn(9, i, 127);
     delay(100);
-    midiNoteOff(0, i, 127);
+    midiNoteOff(9, i, 127);
   }
   
   delay(1000);
@@ -110,7 +119,20 @@ void midiNoteOn(uint8_t chan, uint8_t n, uint8_t vel) {
   if (vel > 127) return;
   
   VS1053_MIDI.write(MIDI_NOTE_ON | chan);
-  VS1053_MIDI.write(n);
+  switch (n) {
+    case 0: VS1053_MIDI.write(CRASH_CYMBAL); break;
+    case 1: VS1053_MIDI.write(RIDE_CYMBAL); break;
+    case 2: VS1053_MIDI.write(HIGH_HAT); break;
+    case 3: VS1053_MIDI.write(LOW_FLOOR_TOM); break;
+    case 4: VS1053_MIDI.write(HIGH_FLOOR_TOM); break;
+    case 5: VS1053_MIDI.write(LOW_MID_TOM); break;
+    case 6: VS1053_MIDI.write(HIGH_MID_TOM); break;
+    case 7: VS1053_MIDI.write(LOW_TOM); break;
+    case 8: VS1053_MIDI.write(HIGH_TOM); break;
+    case 9: VS1053_MIDI.write(ACOUSTIC_SNARE); break;
+    case 10: VS1053_MIDI.write(ELECTRIC_SNARE); break;
+    case 11: VS1053_MIDI.write(BASS_DRUM); break;
+  }
   VS1053_MIDI.write(vel);
 }
 
@@ -120,6 +142,19 @@ void midiNoteOff(uint8_t chan, uint8_t n, uint8_t vel) {
   if (vel > 127) return;
   
   VS1053_MIDI.write(MIDI_NOTE_OFF | chan);
-  VS1053_MIDI.write(n);
+  switch (n) {
+    case 0: VS1053_MIDI.write(CRASH_CYMBAL); break;
+    case 1: VS1053_MIDI.write(RIDE_CYMBAL); break;
+    case 2: VS1053_MIDI.write(HIGH_HAT); break;
+    case 3: VS1053_MIDI.write(LOW_FLOOR_TOM); break;
+    case 4: VS1053_MIDI.write(HIGH_FLOOR_TOM); break;
+    case 5: VS1053_MIDI.write(LOW_MID_TOM); break;
+    case 6: VS1053_MIDI.write(HIGH_MID_TOM); break;
+    case 7: VS1053_MIDI.write(LOW_TOM); break;
+    case 8: VS1053_MIDI.write(HIGH_TOM); break;
+    case 9: VS1053_MIDI.write(ACOUSTIC_SNARE); break;
+    case 10: VS1053_MIDI.write(ELECTRIC_SNARE); break;
+    case 11: VS1053_MIDI.write(BASS_DRUM); break;
+  }
   VS1053_MIDI.write(vel);
 }
