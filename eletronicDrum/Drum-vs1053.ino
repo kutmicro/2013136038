@@ -35,7 +35,6 @@
 #define VS1053_GM1_OCARINA 80
 
 #define MIDI_NOTE_ON  0x90
-#define MIDI_NOTE_OFF 0x80
 #define MIDI_CHAN_MSG 0xB0
 #define MIDI_CHAN_BANK 0x00
 #define MIDI_CHAN_VOLUME 0x07
@@ -79,7 +78,6 @@ void loop() {
   for (uint8_t i=0; i<12; i++) {
     midiNoteOn(9, i, 127);
     delay(100);
-    midiNoteOff(9, i, 127);
   }
   
   delay(1000);
@@ -119,29 +117,6 @@ void midiNoteOn(uint8_t chan, uint8_t n, uint8_t vel) {
   if (vel > 127) return;
   
   VS1053_MIDI.write(MIDI_NOTE_ON | chan);
-  switch (n) {
-    case 0: VS1053_MIDI.write(CRASH_CYMBAL); break;
-    case 1: VS1053_MIDI.write(RIDE_CYMBAL); break;
-    case 2: VS1053_MIDI.write(HIGH_HAT); break;
-    case 3: VS1053_MIDI.write(LOW_FLOOR_TOM); break;
-    case 4: VS1053_MIDI.write(HIGH_FLOOR_TOM); break;
-    case 5: VS1053_MIDI.write(LOW_MID_TOM); break;
-    case 6: VS1053_MIDI.write(HIGH_MID_TOM); break;
-    case 7: VS1053_MIDI.write(LOW_TOM); break;
-    case 8: VS1053_MIDI.write(HIGH_TOM); break;
-    case 9: VS1053_MIDI.write(ACOUSTIC_SNARE); break;
-    case 10: VS1053_MIDI.write(ELECTRIC_SNARE); break;
-    case 11: VS1053_MIDI.write(BASS_DRUM); break;
-  }
-  VS1053_MIDI.write(vel);
-}
-
-void midiNoteOff(uint8_t chan, uint8_t n, uint8_t vel) {
-  if (chan > 15) return;
-  if (n > 127) return;
-  if (vel > 127) return;
-  
-  VS1053_MIDI.write(MIDI_NOTE_OFF | chan);
   switch (n) {
     case 0: VS1053_MIDI.write(CRASH_CYMBAL); break;
     case 1: VS1053_MIDI.write(RIDE_CYMBAL); break;
