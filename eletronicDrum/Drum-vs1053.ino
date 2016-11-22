@@ -69,9 +69,7 @@ void setup() {
   digitalWrite(VS1053_RESET, HIGH);
   delay(10);
   
-  midiSetChannelBank(9, VS1053_BANK_MELODY);
-  midiSetInstrument(9, VS1053_BANK_DRUMS1);
-  midiSetChannelVolume(9, 127);
+  midiSetChannelBank(9,VS1053_BANK_DRUMS1);
 }
 
 void loop() {  
@@ -81,25 +79,6 @@ void loop() {
   }
   
   delay(1000);
-}
-
-void midiSetInstrument(uint8_t chan, uint8_t inst) {
-  if (chan > 15) return;
-  inst --; // page 32 has instruments starting with 1 not 0 :(
-  if (inst > 127) return;
-  
-  VS1053_MIDI.write(MIDI_CHAN_PROGRAM | chan);  
-  VS1053_MIDI.write(inst);
-}
-
-
-void midiSetChannelVolume(uint8_t chan, uint8_t vol) {
-  if (chan > 15) return;
-  if (vol > 127) return;
-  
-  VS1053_MIDI.write(MIDI_CHAN_MSG | chan);
-  VS1053_MIDI.write(MIDI_CHAN_VOLUME);
-  VS1053_MIDI.write(vol);
 }
 
 void midiSetChannelBank(uint8_t chan, uint8_t bank) {
