@@ -1,12 +1,4 @@
 
-#include <Wire.h>
-#include "Adafruit_MPR121.h"
-
-
-Adafruit_MPR121 cap = Adafruit_MPR121();
-
-uint16_t lasttouched = 0;
-uint16_t currtouched = 0;
 
 
 #define CRASH_CYMBAL    (49)//
@@ -27,12 +19,9 @@ uint16_t currtouched = 0;
   ---------------------------------------------------------*/
 void setup() {
   Serial.begin(19200);
-
-  if (!cap.begin(0x5A)) {
-    Serial.println("MPR121 not found, check wiring?");
-    while (1);
-  }
 }
+
+
 void PercussionMessage(byte type, byte velocity) {
   Serial.write(0x90 | 9);
   switch (type) {
@@ -55,18 +44,12 @@ void PercussionMessage(byte type, byte velocity) {
     L  O  O  P
   ---------------------------------------------------------*/
 void loop() {
-  currtouched = cap.touched();
 
   for (uint8_t i = 0; i < 12; i++) {
-    if ((currtouched & _BV(i)) && !(lasttouched & _BV(i)) ) {
       PercussionMessage(i, 127);
-    }
-    if (!(currtouched & _BV(i)) && (lasttouched & _BV(i)) ) {
+      delay(1000);
       PercussionMessage(i, 0);
     }
-  }
-  lasttouched = currtouched;
-  return;
 }
 
 
