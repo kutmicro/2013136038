@@ -47,7 +47,7 @@ void loop() {
 
   for (uint8_t i = 0; i < 12; i++) {
       PercussionMessage(i, 127);
-      delay(1000);
+      delay(500);
       PercussionMessage(i, 0);
     }
 }
