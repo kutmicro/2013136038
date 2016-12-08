@@ -43,7 +43,7 @@ byte ledPin = 13; //MIDI traffic inidicator
 int  instrument = 0;
 
 void setup() {
-  Serial.begin(57600);
+  Serial.begin(19200);
 
   //Setup soft serial for MIDI control
   mySerial.begin(31250);
