@@ -22,9 +22,9 @@ int  instrument = 0;
 ////////////////////////MPR121//////////////////////////////
 Adafruit_MPR121 cap = Adafruit_MPR121();
 
-uint16_t lasttouched = 0;
 uint16_t recenttouched = 0;
 uint16_t currtouched = 0;
+uint16_t lasttouched = 0;
 ////////////////////////////////////////////////////////////
 
 
@@ -41,16 +41,19 @@ uint16_t currtouched = 0;
 
     
 //////////////////사용자 정의 변수//////////////////////////
-unsigned int recordArr[32][3];
+unsigned short recordArr[900][3];
 int rows = 0;
 
-int vol = 0;
-int pre = 0;
-int next = 0;
+unsigned int vol = 0;
+unsigned int pre = 0;
+unsigned int next = 0;
 bool exeRecord = false;
+unsigned int count = 0;
 /////////////////////////////////////////////////////////////
-
-
+void talkMIDI(byte cmd, byte data1, byte data2);
+void PercussionMessage(byte type, byte sound);
+void record(int note,int volume,int interval);
+void noteOn(byte channel, byte note, byte attack_sound);
 /////////////////////////////////////////////////////////////
 /*                        S  E  T  U  P                    */
 /////////////////////////////////////////////////////////////
@@ -79,6 +82,9 @@ void setup() {
   digitalWrite(resetMIDI, HIGH);
   delay(100);
   talkMIDI(0xB0, 0, 0x78);//0xB0 is channel message, set channel volume to near max (127)
+
+   pinMode(13, OUTPUT);//연속 재생
+   pinMode(12, OUTPUT);//녹음
 }
 //////////////////////////////////////////////////////////////
 
@@ -89,32 +95,52 @@ void setup() {
 void loop() {
   talkMIDI(0xC0, instrument, 0); 
   currtouched = cap.touched();
+  //Serial.println(currtouched);
   //현재 감지된 위치의 주소값을 슬레이브모드에서 받아와서 비트연산자를 통해  uint16_t 형식으로 바꾼다, 
   //후에 변수 t에 저장 한 후, t & 0x0FFF를 리턴한다.
-  for (uint8_t i=0; i<12; i++) {
+  for (uint8_t i=0; i<11; i++) {
     pre = millis();
     if((currtouched & _BV(i)) && !(lasttouched & _BV(i)) ) {
            switch(i){
-             case 8: 
-                  Serial.println("reset");
-                  rows = 0;
-                  break;
-             case 9:
+             case 8:
                   Serial.println("play record");
-                  recordArr[0][2] = 0;
                      for(int j= 0;j<rows;j++){
                         delay(recordArr[j][2]);
                         PercussionMessage(recordArr[j][0],recordArr[j][1]);
                      }
                   break;
-             case 10: 
-                 Serial.println("record end");
-                  exeRecord = false;
+             case 9: 
+                  Serial.println("replay");
+                  digitalWrite(13, HIGH); 
+                  while(1){
+                      int j;
+                      for(j= 0;j<rows;j++){
+                        delay(recordArr[j][2]);
+                        PercussionMessage(recordArr[j][0],recordArr[j][1]);
+                      }
+                      delay(recordArr[j-2][2]);
+                      if(cap.touched() == 512){break;}
+                     }
+                  delay(1000);
+                  digitalWrite(13, LOW);  
                   break;
-             case 11: 
+             case 10: 
+                if(count % 2 == 0){
+                 rows = 0;
+                 digitalWrite(12, HIGH);  
                  Serial.println("record start");
                  exeRecord = true;
+                 count++;
                  break;
+                }
+                else{
+                 recordArr[0][2] = 0;
+                 digitalWrite(12, LOW);  
+                 Serial.println("record end");
+                 exeRecord = false;
+                 count++;
+                 break;
+                }
              default:
                  if(recenttouched == currtouched){
                      if(pre - next <300){
@@ -137,7 +163,10 @@ void loop() {
                  next = millis();
           }
     }
-     }
+   /*if(!(currtouched & _BV(i)) && (lasttouched & _BV(i)) ){
+        PercussionMessage(i,0);
+    }*/
+   }
   lasttouched = currtouched;
   return;
 }
@@ -165,17 +194,6 @@ void record(int note,int volume,int interval){
   recordArr[rows][1] = volume;
   recordArr[rows++][2] = interval;
 }
-//Send a MIDI note-on message.  Like pressing a piano key
-//channel ranges from 0-15
-void noteOn(byte channel, byte note, byte attack_sound) {
-  talkMIDI( (0x90 | channel), note, attack_sound);
-}
-
-//Send a MIDI note-off message.  Like releasing a piano key
-void noteOff(byte channel, byte note, byte release_sound) {
-  talkMIDI( (0x80 | channel), note, release_sound);
-}
-
 //Plays a MIDI note. Doesn't check to see that cmd is greater than 127, or that data values are less than 127
 void talkMIDI(byte cmd, byte data1, byte data2) {
   digitalWrite(ledPin, HIGH);
@@ -189,5 +207,12 @@ void talkMIDI(byte cmd, byte data1, byte data2) {
 
   digitalWrite(ledPin, LOW);
 }
+
+//Send a MIDI note-on message.  Like pressing a piano key
+//channel ranges from 0-15
+void noteOn(byte channel, byte note, byte attack_sound) {
+  talkMIDI( (0x90 | channel), note, attack_sound);
+}
+
 
 
