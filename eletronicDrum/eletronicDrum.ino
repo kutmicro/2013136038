@@ -103,6 +103,7 @@ void loop() {
     if((currtouched & _BV(i)) && !(lasttouched & _BV(i)) ) {
            switch(i){
              case 8:
+                  if(exeRecord == true){return;}
                   Serial.println("play record");
                      for(int j= 0;j<rows;j++){
                         delay(recordArr[j][2]);
@@ -110,6 +111,7 @@ void loop() {
                      }
                   break;
              case 9: 
+                  if(exeRecord == true || rows == 0){return ;}
                   Serial.println("replay");
                   digitalWrite(13, HIGH); 
                   while(1){
