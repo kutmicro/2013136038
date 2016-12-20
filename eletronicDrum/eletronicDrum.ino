@@ -29,14 +29,14 @@ uint16_t lasttouched = 0;
 
 
 /////////////////////소리별 할당 값/////////////////////////
-#define CRASH_CYMBAL    (49)
-#define RIDE_CYMBAL     (51)
-#define HIGH_HAT        (44)
-#define LOW_FLOOR_TOM   (41)
-#define HIGH_MID_TOM    (48)
-#define HIGH_TOM        (50)
-#define ACOUSTIC_SNARE  (38)
-#define BASS_DRUM       (35)
+#define CRASH_CYMBAL    (49)//0
+#define RIDE_CYMBAL     (51)//1
+#define HIGH_HAT        (44)//2
+#define LOW_FLOOR_TOM   (41)//3
+#define HIGH_MID_TOM    (48)//4
+#define HIGH_TOM        (50)//5
+#define ACOUSTIC_SNARE  (38)//6
+#define BASS_DRUM       (35)//7
 ////////////////////////////////////////////////////////////
 
     
@@ -83,7 +83,7 @@ void setup() {
   delay(100);
   talkMIDI(0xB0, 0, 0x78);//0xB0 is channel message, set channel volume to near max (127)
 
-   pinMode(13, OUTPUT);//연속 재생
+   pinMode(8, OUTPUT);//연속 재생
    pinMode(12, OUTPUT);//녹음
 }
 //////////////////////////////////////////////////////////////
@@ -113,7 +113,7 @@ void loop() {
              case 9: 
                   if(exeRecord == true || rows == 0){return ;}
                   Serial.println("replay");
-                  digitalWrite(13, HIGH); 
+                  digitalWrite(8, HIGH); 
                   while(1){
                       int j;
                       for(j= 0;j<rows;j++){
@@ -124,7 +124,7 @@ void loop() {
                       if(cap.touched() == 512){break;}
                      }
                   delay(1000);
-                  digitalWrite(13, LOW);  
+                  digitalWrite(8, LOW);  
                   break;
              case 10: 
                 if(count % 2 == 0){
@@ -178,15 +178,13 @@ void loop() {
 /*                          F U N C T I O N                        */
 /////////////////////////////////////////////////////////////////////
 void PercussionMessage(byte type, byte sound) {
-  Serial.write(0x90 | 9);
-  //미디프로토콜에서 0x90은 Note On command, channel은 b3~b0 에 있습니다. channel 9는 타악기 입니다.
     switch(type){
-      case 0: noteOn(0,CRASH_CYMBAL, 50+sound);Serial.println("0touched"); break;
-      case 1: noteOn(0,RIDE_CYMBAL, 50+sound);Serial.println("1touched"); break;
-      case 2: noteOn(0,HIGH_HAT, 50+sound);Serial.println("2touched"); break;
-      case 3: noteOn(0,LOW_FLOOR_TOM, 50+sound); Serial.println("3touched"); break;
-      case 4: noteOn(0,HIGH_MID_TOM, 50+sound);  Serial.println("4touched");break;
-      case 5: noteOn(0,HIGH_TOM, 50+sound);  Serial.println("5touched");break;
+      case 0: noteOn(0,RIDE_CYMBAL, 50+sound); Serial.println("0touched"); break;
+      case 1: noteOn(0,LOW_FLOOR_TOM, 50+sound); Serial.println("1touched"); break;
+      case 2: noteOn(0,CRASH_CYMBAL, 50+sound); Serial.println("2touched"); break;
+      case 3: noteOn(0,HIGH_MID_TOM, 50+sound); Serial.println("3touched"); break;
+      case 4: noteOn(0,HIGH_TOM, 50+sound); Serial.println("4touched");break;
+      case 5: noteOn(0,HIGH_HAT, 50+sound); Serial.println("5touched");break;
       case 6: noteOn(0,ACOUSTIC_SNARE, 50+sound); Serial.println("6touched");break;
       case 7: noteOn(0,BASS_DRUM, 50+sound); Serial.println("7touched");break;
   }
